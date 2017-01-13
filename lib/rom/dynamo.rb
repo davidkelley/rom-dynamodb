@@ -1,5 +1,5 @@
 require 'rom'
-require 'aws-sdk'
+require 'aws-sdk-core'
 require 'deep_merge'
 
 require 'rom/dynamo/dataset'
