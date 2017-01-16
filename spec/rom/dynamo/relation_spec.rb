@@ -30,6 +30,34 @@ module ROM
 
     it { should respond_to(:by_id) }
 
+    describe '#count' do
+      subject { relation.count }
+
+      it { should be_a Fixnum }
+
+      it { should be > 0 }
+    end
+
+    describe '#status' do
+      subject { relation.status }
+
+      it { should be_a Symbol }
+
+      specify { expect(subject.to_s).to match /[a-z]+/ }
+    end
+
+    describe '#keys' do
+      subject { relation.keys }
+
+      it { should be_a Array }
+
+      it { should_not be_empty }
+
+      specify { expect(subject.sample).to be_a Symbol }
+
+      specify { expect(subject.sample.to_s).to match /[a-z]+/ }
+    end
+
     specify { expect(container.commands[descriptor]).to_not be_nil }
 
     specify { expect { relation.by_id(user[:id]).one! }.to_not raise_error }

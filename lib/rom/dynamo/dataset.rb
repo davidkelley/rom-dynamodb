@@ -58,7 +58,8 @@ module ROM
       end
 
       def information
-        connection.describe_table build([{}]).table
+        payload = build([{}])
+        connection.describe_table(payload).table
       end
 
       def each(&block)

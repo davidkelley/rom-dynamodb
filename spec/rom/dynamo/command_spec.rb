@@ -17,29 +17,33 @@ module ROM
         end
 
         rom.commands(descriptor) do
-          KEY = Helpers::Functions[:symbolize_keys] >> Helpers::Functions[:accept_keys, [:id]]
-
           define(:create) { result :one }
 
           define(:delete) do
             result :one
 
-            input KEY
+            input Helpers::Functions[:symbolize_keys] >> Helpers::Functions[:accept_keys, [:id]]
           end
 
           define(:update) do
             result :one
 
-            input KEY
+            input Helpers::Functions[:symbolize_keys] >> Helpers::Functions[:accept_keys, [:id]]
           end
         end
       end
     }
 
+    let(:relation) { container.relation(descriptor) }
+
     describe 'create' do
       subject(:command) { container.commands[descriptor][:create] }
 
-      it { should_not be_nil }
+      describe 'command' do
+        it { should_not be_nil }
+      end
+
+      specify { expect { subject.call(user) }.to change { relation.count }.by(1) }
 
       specify { expect { subject.call(user) }.to_not raise_error }
     end
@@ -47,11 +51,15 @@ module ROM
     describe 'update' do
       let(:name) { Faker::Name.name }
 
-      let(:relation) { container.relation(descriptor) }
-
       before { container.commands[descriptor][:create].call(user) }
 
       subject(:command) { container.commands[descriptor][:update] }
+
+      describe 'command' do
+        it { should_not be_nil }
+      end
+
+      specify { expect { subject.by_id(user[:id]).call(name: name) }.to_not change { relation.count } }
 
       specify { expect { subject.by_id(user[:id]).call(name: name) }.to change { relation.by_id(user[:id]).one!['name'] }.from(user[:name]).to(name) }
     end
@@ -59,13 +67,17 @@ module ROM
     describe 'delete' do
       subject(:command) { container.commands[descriptor][:delete] }
 
-      let(:relation) { container.relation(descriptor) }
-
-      it { should_not be_nil }
-
       before { container.commands[descriptor][:create].call(user) }
 
-      specify { expect { subject.by_id(user[:id]).call }.to_not raise_error }
+      describe 'command' do
+        it { should_not be_nil }
+      end
+
+      specify { expect { subject.by_id(user[:id]).call }.to change { relation.count }.by(-1) }
+
+      describe 'before delete' do
+        specify { expect { relation.by_id(user[:id]).one! }.to_not raise_error }
+      end
 
       describe 'after delete' do
         before { subject.by_id(user[:id]).call }
