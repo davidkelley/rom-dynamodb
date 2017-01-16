@@ -10,7 +10,7 @@ module ROM
 
         def with_tuple(tuple)
           data = tuple.is_a?(Hash) ? tuple : tuple.to_h
-          source.delete(data)
+          source.delete(input[data])
         end
       end
     end

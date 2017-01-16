@@ -43,7 +43,8 @@ module ROM
       def update(key, hash, action = 'PUT')
         data = hash.delete_if { |k, _| key.keys.include?(k) }
         update = to_update_structure(data)
-        connection.update_item build([query, { key: key }]).data
+        payload = build([update, { key: key }])
+        connection.update_item(payload).data
       end
 
       def create(hash)

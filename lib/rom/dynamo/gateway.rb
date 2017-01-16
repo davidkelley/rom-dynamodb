@@ -14,7 +14,7 @@ module ROM
 
       def dataset?(name)
         list = connection.list_tables
-        list[:table_names].include?(name)
+        list.table_names.include?(name)
       end
 
       def connection

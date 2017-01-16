@@ -5,13 +5,12 @@ module ROM
         adapter :dynamo
 
         def execute(attributes)
-          relation.to_a.collect do |tuple|
-            with_tuple(tuple, attributes)
-          end
+          relation.to_a.collect { |tuple| with_tuple(tuple, attributes) }
         end
 
         def with_tuple(tuple, attributes)
-          relation.update(key(tuple), attributes.to_h)
+          data = tuple.is_a?(Hash) ? tuple : tuple.to_h
+          relation.update(input[data], attributes.to_h)
         end
       end
     end
