@@ -1,16 +1,11 @@
-describe ROM::Dynamo do
-  include_context "dynamo"
+module ROM
+  describe Dynamo do
+    include_context 'dynamo'
 
-  let(:schema) {
-    {
-      definitions: { id: :N, range: :N },
-      schema: { id: :HASH, range: :RANGE }
-    }
-  }
+    let(:table) { build(:table) }
 
-  let(:table) { build(:table, **schema) }
+    specify { expect { ROM::Configuration.new(:dynamo, credentials) }.to_not raise_error }
 
-  it "has a version number" do
-    expect(ROM::Dynamo::VERSION).not_to be nil
+    specify { expect { {}.deep_merge(credentials) }.to_not raise_error }
   end
 end

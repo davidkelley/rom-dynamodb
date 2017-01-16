@@ -3,7 +3,7 @@ FactoryGirl.define do
     table_name { SecureRandom.uuid }
 
     transient do
-      definitions({ id: :N })
+      definitions({ id: :S })
       schema({ id: :HASH })
     end
 

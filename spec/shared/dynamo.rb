@@ -1,6 +1,8 @@
 shared_context 'dynamo' do
   let(:table) { fail_on_missing_definition(:table) }
 
+  let(:credentials) { credentials }
+
   around { |ex| create_table_and_wait(table, &ex) }
 
   def dynamo

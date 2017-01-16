@@ -5,6 +5,7 @@ module ROM
 
       def initialize(config = {})
         @config = config
+        @datasets ||= {}
       end
 
       def dataset(name)

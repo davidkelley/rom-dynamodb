@@ -46,12 +46,14 @@ module ROM
         connection.update_item build([query, { key: key }]).data
       end
 
-      def insert(hash)
-        connection.put_item build([{ item: hash }]).data
+      def create(hash)
+        payload = build([{ item: hash }])
+        connection.put_item(payload).attributes
       end
 
       def delete(hash)
-        connection.delete_item build([{ key: hash }]).data
+        payload = build([{ key: hash }])
+        connection.delete_item(payload).data
       end
 
       def information
@@ -66,12 +68,12 @@ module ROM
         @connection ||= Aws::DynamoDB::Client.new(@config)
       end
 
-      def execute
+      def execute(query)
         @response ||= case operation
         when :batch_get
-          connection.send(operation, { request_items: { name => build } })
+          connection.send(operation, { request_items: { name => query } })
         else
-          connection.send(operation, build).data
+          connection.send(operation, query).data
         end
       end
 
