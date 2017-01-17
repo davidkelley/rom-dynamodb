@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "rom", ">= 2.0.0"
+  spec.add_runtime_dependency "rom", "~> 3.0.0.beta1"
   spec.add_runtime_dependency "aws-sdk-core", ">= 2.1"
   spec.add_runtime_dependency "deep_merge", ">= 1.1.1"
 

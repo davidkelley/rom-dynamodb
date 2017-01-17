@@ -3,9 +3,15 @@ module ROM
     class Relation < ROM::Relation
       adapter :dynamo
 
-      forward :restrict, :scan, :retrieve, :batch_get
+      forward :restrict, :scan, :retrieve, :batch_get, :equal,
+              :before, :after, :between, :select, :offset, :limit
 
       forward :create, :delete, :update
+
+      # def initialize(*r)
+      #   super *r
+      #   puts schema.inspect
+      # end
 
       def info
         dataset.information
@@ -19,10 +25,6 @@ module ROM
         dataset.information.table_status.downcase.to_sym
       rescue
         :unknown
-      end
-
-      def keys
-        @schema ||= dataset.information.key_schema.collect { |s| s.attribute_name.downcase.to_sym }
       end
     end
   end

@@ -2,6 +2,7 @@ require 'rom'
 require 'aws-sdk-core'
 require 'deep_merge'
 
+require 'rom/dynamo/functions'
 require 'rom/dynamo/dataset'
 require 'rom/dynamo/gateway'
 require 'rom/dynamo/commands'

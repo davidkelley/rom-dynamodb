@@ -16,8 +16,28 @@ module ROM
         append { { limit: num } unless num.nil? }
       end
 
-      def start(key)
+      def offset(key)
         append { { exclusive_start_key: key } unless key.nil? }
+      end
+
+      def select(keys)
+        restrict(select: "SPECIFIC_ATTRIBUTES", attributes_to_get: keys.collect(&:to_s))
+      end
+
+      def equal(key, val, predicate = :eq)
+        restrict_by(key, predicate, [val])
+      end
+
+      def between(key, after, before, predicate = :between)
+        restrict_by(key, predicate, [after, before])
+      end
+
+      def after(key, after, predicate = :ge)
+        restrict_by(key, predicate, [after])
+      end
+
+      def before(key, before, predicate = :le)
+        restrict_by(key, predicate, [before])
       end
 
       def batch_get(query = nil)
@@ -67,7 +87,7 @@ module ROM
       end
 
       def connection
-        @connection ||= Aws::DynamoDB::Client.new(@config)
+        @connection ||= Aws::DynamoDB::Client.new(config)
       end
 
       def execute(query)
@@ -80,6 +100,15 @@ module ROM
       end
 
       private
+
+      def restrict_by(key, verb, list)
+        restrict(key_conditions: {
+          key => {
+            comparison_operator: verb.to_s.upcase,
+            attribute_value_list: list
+          }
+        })
+      end
 
       def each_item(body, &block)
         case operation

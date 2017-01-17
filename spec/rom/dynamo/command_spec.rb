@@ -22,13 +22,13 @@ module ROM
           define(:delete) do
             result :one
 
-            input Helpers::Functions[:symbolize_keys] >> Helpers::Functions[:accept_keys, [:id]]
+            input Functions[:symbolize_keys] >> Functions[:accept_keys, [:id]]
           end
 
           define(:update) do
             result :one
 
-            input Helpers::Functions[:symbolize_keys] >> Helpers::Functions[:accept_keys, [:id]]
+            input Functions[:symbolize_keys] >> Functions[:accept_keys, [:id]]
           end
         end
       end
