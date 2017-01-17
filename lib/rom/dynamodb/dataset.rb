@@ -1,5 +1,5 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     class Dataset
       attr_reader :name, :operation, :config
 
@@ -10,6 +10,18 @@ module ROM
         @operation = operation
         @config = config
         @queries = queries
+      end
+
+      def index(name)
+        restrict(index_name: name)
+      end
+
+      def ascending
+        restrict(scan_index_forward: true)
+      end
+
+      def descending
+        restrict(scan_index_forward: false)
       end
 
       def limit(num = nil)

@@ -1,5 +1,5 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     module Functions
       extend Transproc::Registry
       import Transproc::HashTransformations

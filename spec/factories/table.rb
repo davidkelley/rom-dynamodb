@@ -4,7 +4,12 @@ FactoryGirl.define do
 
     transient do
       definitions({ id: :S })
+
       schema({ id: :HASH })
+
+      global([])
+      
+      local([])
     end
 
     attribute_definitions do
@@ -24,6 +29,38 @@ FactoryGirl.define do
         :read_capacity_units => 1,
         :write_capacity_units => 1,
       }
+    end
+
+    global_secondary_indexes do
+      global.collect do |index, schema|
+        {
+          index_name: index,
+          key_schema: schema.collect { |n, t| { attribute_name: n, key_type: t } },
+          projection: {
+            projection_type: "ALL"
+          },
+          provisioned_throughput: {
+            read_capacity_units: 1,
+            write_capacity_units: 1
+          }
+        }
+      end unless global.empty?
+    end
+
+    local_secondary_indexes do
+      local.collect do |index, schema|
+        {
+          index_name: index,
+          key_schema: schema.collect { |n, t| { attribute_name: n, key_type: t } },
+          projection: {
+            projection_type: "ALL"
+          },
+          provisioned_throughput: {
+            read_capacity_units: 1,
+            write_capacity_units: 1
+          }
+        }
+      end unless local.empty?
     end
 
     initialize_with { attributes }

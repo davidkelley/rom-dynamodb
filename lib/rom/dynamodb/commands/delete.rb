@@ -1,8 +1,8 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     module Commands
       class Delete < ROM::Commands::Delete
-        adapter :dynamo
+        adapter :dynamodb
 
         def execute
           relation.to_a.collect(&method(:with_tuple))

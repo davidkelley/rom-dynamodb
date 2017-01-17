@@ -1,12 +1,17 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     class Relation < ROM::Relation
-      adapter :dynamo
+      adapter :dynamodb
 
-      forward :restrict, :scan, :retrieve, :batch_get, :equal,
+      # retrieval
+      forward :restrict, :scan, :retrieve, :batch_get, :equal, :index,
               :before, :after, :between, :select, :offset, :limit
 
+      # operations
       forward :create, :delete, :update
+
+      # storing
+      forward :ascending, :descending
 
       # def initialize(*r)
       #   super *r

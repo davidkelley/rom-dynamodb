@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'rom/dynamo/version'
+require 'rom/dynamodb/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rom-dynamo"
-  spec.version       = ROM::Dynamo::VERSION
+  spec.name          = "rom-dynamodb"
+  spec.version       = ROM::DynamoDB::VERSION
   spec.authors       = ["davidkelley"]
   spec.email         = ["david.james.kelley@gmail.com"]
   spec.summary       = 'DynamoDB adapter for Ruby Object Mapper'
@@ -28,5 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bigdecimal", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "coveralls", "~> 0.8"
   spec.add_development_dependency "factory_girl", "~> 4.5"
 end

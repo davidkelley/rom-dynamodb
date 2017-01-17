@@ -1,8 +1,8 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     module Commands
       class Update < ROM::Commands::Update
-        adapter :dynamo
+        adapter :dynamodb
 
         def execute(attributes)
           relation.to_a.collect { |tuple| with_tuple(tuple, attributes) }

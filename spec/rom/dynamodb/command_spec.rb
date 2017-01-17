@@ -9,7 +9,7 @@ module ROM
     let(:user) { build(:user) }
 
     let(:container) {
-      ROM.container(:dynamo, credentials) do |rom|
+      ROM.container(:dynamodb, credentials) do |rom|
         rom.relation(descriptor) do
           def by_id(id)
             retrieve(key: { id: id })

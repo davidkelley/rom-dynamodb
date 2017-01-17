@@ -1,12 +1,27 @@
 sudo: false
+
 language: ruby
+
 rvm:
   - 2.0.0
-before_install: gem install bundler -v 1.13.7
 
 sudo: required
 
-language: ruby
+before_install:
+  - docker-compose pull
+  - docker-compose build
+  - docker-compose start
+
+script: docker-compose run rom bundle exec rspec
+
+env:
+  global:
+    - secure: "YAQCL2ZQNY6vpK0BsYpzorrex/kTCShfXpE7d3j9VTi8qkcbPRXf9Me/grgiogYuq14/cbxEIT9Awh4SKxaJbsVmCDd7FM9dvM2O8mUCuTmno1AxKExpY7TmfW/ARUHwtiOMI1kxgCqScXawPYIsBFHxXhmuF4woPAB7L6n9EzzQUUBwKB/LZIaZV5glT/6QlQH16MAzj5+UgjZm2hgIvBIdaumi1F6A8kHlG/Gr6z5rNTVooMSbN9Xt8RlNhIpR07xSirYMb9Baq7GnWjiXryiUP30F42mOEucNgNBiQdfti9WAw+u6dJNmWv+pB15YicmntYOHCbtq4WyTpkCOmcF6Ry6GZTs+5qvOzvZSCgaNAwGjHJT07X8SabUIS+9IcHqrxmeYsDFyXEF44Oh9KGNHhy66z5vAwl/FcfKL+DkvjY18oZ0FZGGEky4OOb/M/B0IWlx5+ARuo3P1l14It4zmFpGeGUqbTKOCAlQDvMbTxe2wmcieOCz6ZkbhwFcf5GIsA2gXk37p0hGBnQat/dwJwJWvDxMfNLKqk9m9YVp69sSE8elixvc15XLb3jsmom50sRNVYPuPlo556rjByzEPPU+TeXJp5sYdXW4Z5BgcOKx6BX964WI6CR67EqgyCmvsLTQoX7r/JuDL/vtrGG6uxsf96+/y7zLKTexB3A8="
+
+addons:
+  code_climate:
+    repo_token:
+      secure: "AL3aOEHyWvXkXGne+U3n6ToU0Ubp8yiy3y6gqo/IF2DsN133ynEwcUsif81eIeMTYa+LH4PfDV4iImbwrawhJdyr1ghAqC98k2xfzD5oBSOO8b6gj5k3fRLGRIlGcFwrSSZm9t3F3J3teU3QeaeOW5QhJrtGtlApVvMRzUQPmPbFKjSbzg9oXnl6rWpghUGPjkJZ1zJARZqYx6yJ5JYoRFX7xPcwmwvMa3tCnLh3wfpVCexsa33gssFCGUuh/qU2aLO9f/EyLV95nkxNoXdNoMAajuddDAUK2GQSBLuGijyydUl+x9ZLEsfMJbW3xFqeYVQzMiRXMku0kp7NuzSF9TfPP4TSv5EIJAuVujB3u7sc+jRGEy+m+WawUunu8BmX1l9vjBMcMUonqcsToTBHf9u1nLBdJMhwk0WQkvcJ31g4lrc5y4wut/mRdylBTrplAJAwcHfXnM7ADWL4DN3Yx+Vo+lPgkCrtnsMST2PUcyW2v+hln/BR9qB9PGPC121o7D+BNNuT4oLrw7tebnl3CWI9cpb2jaZl1cVrINhOnApukO1oqxOE2xGVCkNIZ4RIDLlj1WVbbLBN/C/dREjf6n/jNT5LylWEULHofYpit2+1o8KSHjT7aCMLwWlyIuAyYz45WSPviy4oyrjeLUGUo3u15EjJeGcKhXtrtreVdvk="
 
 services:
   - docker

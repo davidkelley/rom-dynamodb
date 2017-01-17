@@ -1,8 +1,8 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     module Commands
       class Create < ROM::Commands::Create
-        adapter :dynamo
+        adapter :dynamodb
 
         def execute(tuples)
           tuples = tuples.is_a?(Array) ? tuples : [tuples]

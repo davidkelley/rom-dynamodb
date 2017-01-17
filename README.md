@@ -1,5 +1,10 @@
 # ROM DynamoDB Adapter
 
+[![Code Climate](https://codeclimate.com/github/davidkelley/rom-dynamo/badges/gpa.svg)](https://codeclimate.com/github/davidkelley/rom-dynamo) [![Test Coverage](https://codeclimate.com/github/davidkelley/rom-dynamo/badges/coverage.svg)](https://codeclimate.com/github/davidkelley/rom-dynamo/coverage) [![Dependency Status](https://gemnasium.com/badges/github.com/davidkelley/rom-dynamo.svg)](https://gemnasium.com/github.com/davidkelley/rom-dynamo)
+ [![Build Status](https://travis-ci.org/davidkelley/rom-dynamo.svg?branch=master)](https://travis-ci.org/davidkelley/rom-dynamo) [![Inline docs](http://inch-ci.org/github/davidkelley/rom-dynamo.svg?branch=master)](http://inch-ci.org/github/davidkelley/rom-dynamo)
+
+---
+
 TODO: Delete this and the text above, and describe your gem
 
 ## Installation
@@ -7,7 +12,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rom-dynamo'
+gem 'rom-dynamodb'
 ```
 
 And then execute:
@@ -16,7 +21,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install rom-dynamo
+    $ gem install rom-dynamodb
 
 ## Usage
 

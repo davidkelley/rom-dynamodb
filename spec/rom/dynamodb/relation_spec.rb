@@ -21,7 +21,7 @@ module ROM
     let(:logs) { build_list(:log, count, host: host, sequence_step: sequence_step) }
 
     let(:container) {
-      ROM.container(:dynamo, credentials) do |rom|
+      ROM.container(:dynamodb, credentials) do |rom|
         rom.relation(descriptor) do
           def by_host(host)
             equal(:host, host)
@@ -191,7 +191,7 @@ module ROM
     let(:user) { users.sample }
 
     let(:container) {
-      ROM.container(:dynamo, credentials) do |rom|
+      ROM.container(:dynamodb, credentials) do |rom|
         rom.relation(descriptor) do
           def by_id(id)
             retrieve(key: { id: id })

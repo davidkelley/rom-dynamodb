@@ -1,5 +1,5 @@
 module ROM
-  module Dynamo
+  module DynamoDB
     class Gateway < ROM::Gateway
       attr_reader :datasets, :config
 
