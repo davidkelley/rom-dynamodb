@@ -1,6 +1,6 @@
 # ROM DynamoDB Adapter
 
-[![Gem Version](https://badge.fury.io/rb/rom-dynamodb.svg)](https://badge.fury.io/rb/rom-dynamodb) [![Code Climate](https://codeclimate.com/github/davidkelley/rom-dynamodb/badges/gpa.svg)](https://codeclimate.com/github/davidkelley/rom-dynamodb) [![Test Coverage](https://codeclimate.com/github/davidkelley/rom-dynamodb/badges/coverage.svg)](https://codeclimate.com/github/davidkelley/rom-dynamodb/coverage) [![Dependency Status](https://gemnasium.com/badges/github.com/davidkelley/rom-dynamodb.svg)](https://gemnasium.com/github.com/davidkelley/rom-dynamodb)
+[![Gem Version](https://badge.fury.io/rb/rom-dynamodb.svg)](https://badge.fury.io/rb/rom-dynamodb) [![Code Climate](https://codeclimate.com/github/davidkelley/rom-dynamodb/badges/gpa.svg)](https://codeclimate.com/github/davidkelley/rom-dynamodb) [![Coverage Status](https://coveralls.io/repos/github/davidkelley/rom-dynamodb/badge.svg?branch=master)](https://coveralls.io/github/davidkelley/rom-dynamodb?branch=master) [![Dependency Status](https://gemnasium.com/badges/github.com/davidkelley/rom-dynamodb.svg)](https://gemnasium.com/github.com/davidkelley/rom-dynamodb)
  [![Build Status](https://travis-ci.org/davidkelley/rom-dynamodb.svg?branch=master)](https://travis-ci.org/davidkelley/rom-dynamodb) [![Inline docs](http://inch-ci.org/github/davidkelley/rom-dynamodb.svg?branch=master)](http://inch-ci.org/github/davidkelley/rom-dynamodb)
 
 ---
