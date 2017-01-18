@@ -7,10 +7,10 @@ before_install:
   - docker-compose build
 
 script:
-  - docker-compose run rom bundle exec rspec
+  - docker-compose run -e CI=true -e TRAVIS=true -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN rom bundle exec rspec
 
-after_success:
-  - docker-compose run -e CI=true -e TRAVIS=true rom coveralls push
+# after_success:
+#   - docker-compose run -e CI=true -e TRAVIS=true rom coveralls push
 
 env:
   global:
