@@ -13,7 +13,7 @@ services:
       dockerfile: Dockerfile.development
     command: rspec
     environment:
-      - DYNAMO_ENDPOINT: 'http://dynamo:8000'
+      - DYNAMO_ENDPOINT=http://dynamo:8000
       - CI
       - TRAVIS
       - TRAVIS_BRANCH
