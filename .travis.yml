@@ -10,8 +10,6 @@ script: docker-compose run rom bundle exec rspec
 
 env:
   global:
-    - CI=true
-    - TRAVIS=true
     - secure: "kQuM1k5J7COei8KyvabP/YROhoUFlLZkieaDQLFyOj2cobYW6bYsfzuWkNKaNpBrVjEenumLHwHg6P9vVmI7FQ1IEUW2QkAYSUUni/jRBK53jICIINWo6YLWgLQdpdkBnCzMv8MVXBlrqLgqcUn3aUXEtOhM9uHQbhknBx+z+Yja8tdjt6m8scBmqGj8a3zH3Pypi0PbH7fNHUXzAGx/CUyB/s58zUkm9SRs7uR5TRVKtmUyXaroTxmKL9iDIuArjMsOTzu/Xr1kwdlg1kmzB//j0basRzYPOSNdJAGKEdwXo6ul7ZGc993iIJGS/+LZuLgrOcdjHklBSWlduQABEqOFpL76cG7RUH5Mo58Wqd+ftR/Lz5+vEDxpj1JXOUzKv4yB/EA3hTxnK7vCvp5pYSAD+sqtTn5f8TpcxaKYwR0n5YUtV9E8JhZ4I5QvWONU1zXsb9ulhGBFRhZniFKNEsBoapdCA+rAEXLJS0D7ODEE7degsv1uMhO6QPt1sAWvHZvZh01XvlEM9p7aeTOnD72DjKw47GTU/GL6Ekl8er+wubk/ZGBKMQ9YZXiT2jQwgIJyKSWw19s0Ru9otLhrSgwY0eHhvQuyYWL2DwFV2Bcrx1Glgj96+nSzj8g/42NTL1fX5cYAAPYjnqWLc8yuqF+ioF24Yq22CuTQhn/u0BE="
 
 addons:
@@ -22,8 +20,8 @@ addons:
 services:
   - docker
 
-# after_success:
-#   - CI=true TRAVIS=true coveralls --verbose
+after_success:
+  - docker-compose run -e CI=true -e TRAVIS=true rom coveralls push
 
 deploy:
   provider: rubygems
