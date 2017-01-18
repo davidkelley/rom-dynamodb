@@ -6,7 +6,11 @@ before_install:
   - docker-compose pull
   - docker-compose build
 
-script: docker-compose run rom bundle exec rspec
+script:
+  - docker-compose run rom bundle exec rspec
+
+after_success:
+  - docker-compose run -e CI=true -e TRAVIS=true rom coveralls push
 
 env:
   global:
@@ -19,9 +23,6 @@ addons:
 
 services:
   - docker
-
-after_success:
-  - docker-compose run -e CI=true -e TRAVIS=true rom coveralls push
 
 deploy:
   provider: rubygems
