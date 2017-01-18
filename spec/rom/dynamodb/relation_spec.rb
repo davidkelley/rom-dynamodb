@@ -2,7 +2,7 @@ module ROM
   describe 'Key: { host<HASH>, logged_at<RANGE> } table' do
     include_context 'dynamo'
 
-    let(:sequence_step) { 10 }
+    let(:sequence_step) { 60 }
 
     let(:descriptor) { :logs }
 
@@ -69,20 +69,6 @@ module ROM
     end
 
     describe '#between' do
-      describe 'all' do
-        let(:after) { Time.now.to_f - (sequence_step * count)  }
-
-        let(:before) { Time.now.to_f + (sequence_step * count) }
-
-        specify { expect(relation.by_host(host).logged_at_between(after, before).to_a.size).to eq count }
-
-        describe 'with limit' do
-          let(:limit) { (count / 2).floor }
-
-          specify { expect(relation.by_host(host).logged_at_between(after, before).limit(limit).to_a.size).to eq limit }
-        end
-      end
-
       describe 'most' do
         let(:left) { rand(1..(count/2).floor) }
 
@@ -106,7 +92,7 @@ module ROM
 
     describe '#before' do
       describe 'all' do
-        let(:time) { Time.now.to_f + (60 * 60 * 24 * 7 * 52) }
+        let(:time) { Time.now.to_i + (60 * 60 * 24 * 7 * 52) }
 
         specify { expect(relation.by_host(host).logged_at_before(time).to_a.size).to eq count }
 
@@ -134,7 +120,7 @@ module ROM
       end
 
       describe 'none' do
-        let(:time) { Time.now.to_f - (60 * 60 * 24 * 7 * 52) }
+        let(:time) { Time.now.to_i - (60 * 60 * 24 * 7 * 52) }
 
         specify { expect(relation.by_host(host).logged_at_before(time).to_a).to be_empty }
       end
@@ -142,7 +128,7 @@ module ROM
 
     describe '#after' do
       describe 'all' do
-        let(:time) { Time.now.to_f - (sequence_step * count) }
+        let(:time) { Time.now.to_i - (sequence_step * count) }
 
         specify { expect(relation.by_host(host).logged_at_after(time).to_a.size).to eq count }
 
@@ -170,7 +156,7 @@ module ROM
       end
 
       describe 'none' do
-        let(:time) { Time.now.to_f + (60 * 60 * 24 * 7 * 52) }
+        let(:time) { Time.now.to_i + (60 * 60 * 24 * 7 * 52) }
 
         specify { expect(relation.by_host(host).logged_at_after(time).to_a).to be_empty }
       end

@@ -4,7 +4,7 @@ FactoryGirl.define do
 
     name { Faker::Name.name }
 
-    sequence(:created_at) { |n| Time.now.to_f + n * 10 }
+    sequence(:created_at) { |n| Time.now.to_i + n * 10 }
 
     initialize_with { attributes }
   end
