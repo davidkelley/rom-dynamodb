@@ -1,7 +1,7 @@
 ### Steps to reproduce
 
 (Guidelines for creating a bug report are [available
-here](https://github.com/davidkelley/rom-dynamo/blob/master/CONTRIBUTING.md))
+here](https://github.com/davidkelley/rom-dynamodb/blob/master/CONTRIBUTING.md))
 
 ### Expected behavior
 Describe what should happen

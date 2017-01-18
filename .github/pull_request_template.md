@@ -13,6 +13,6 @@ benchmarks, or other information.
 
 Finally, if your pull request affects documentation or any non-code
 changes, guidelines for those changes are [available
-here](https://github.com/davidkelley/rom-dynamo/blob/master/CONTRIBUTING.md)
+here](https://github.com/davidkelley/rom-dynamodb/blob/master/CONTRIBUTING.md)
 
 Thanks for contributing to Drumbeat!
