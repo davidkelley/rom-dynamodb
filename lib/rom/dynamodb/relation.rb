@@ -32,15 +32,15 @@ module ROM
 
       forward :limit
 
-      foward :create
+      forward :create
 
-      foward :delete
+      forward :delete
 
-      foward :update
+      forward :update
 
-      foward :ascending
+      forward :ascending
 
-      foward :descending
+      forward :descending
 
       # Retrieve a single record, providing a hash key name and the ID to
       # fetch.
