@@ -13,11 +13,6 @@ module ROM
       # storing
       forward :ascending, :descending
 
-      # def initialize(*r)
-      #   super *r
-      #   puts schema.inspect
-      # end
-
       def info
         dataset.information
       end

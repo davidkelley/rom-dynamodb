@@ -28,6 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bigdecimal", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "coveralls", "~> 0.8"
+  spec.add_development_dependency "codeclimate-test-reporter", "~> 1.0"
   spec.add_development_dependency "factory_girl", "~> 4.5"
 end
