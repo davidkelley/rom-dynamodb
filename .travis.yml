@@ -11,7 +11,7 @@ script:
   - docker-compose run rom bundle exec rspec
 
 after_success:
-  - docker-compose run rom bundle exec codeclimate-test-reporter
+  - bundle exec codeclimate-test-reporter
 
 env:
   global:
