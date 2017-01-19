@@ -3,57 +3,43 @@ module ROM
     class Relation < ROM::Relation
       adapter :dynamodb
 
-      # @!macro r.forward
-      # Forwards the $1 operation to the underlying dataset.
+      # @!macro [attach] r.forward
+      # Performs a $1 action on the relation. In most cases, these operations
+      # can be chained to build up larger queries to perform.
+      # @note This method forwards the $1 operation to the underlying dataset.
       # @see DynamoDB::Dataset#$1
       forward :restrict
 
-      # @!macro r.forward
       forward :scan
 
-      # @!macro r.forward
       forward :retrieve
 
-      # @!macro r.forward
       forward :batch_get
 
-      # @!macro r.forward
       forward :equal
 
-      # @!macro r.forward
       forward :index
 
-      # @!macro r.forward
       forward :before
 
-      # @!macro r.forward
       forward :after
 
-      # @!macro r.forward
       forward :between
 
-      # @!macro r.forward
       forward :select
 
-      # @!macro r.forward
       forward :offset
 
-      # @!macro r.forward
       forward :limit
 
-      # @!macro r.forward
       foward :create
 
-      # @!macro r.forward
       foward :delete
 
-      # @!macro r.forward
       foward :update
 
-      # @!macro r.forward
       foward :ascending
 
-      # @!macro r.forward
       foward :descending
 
       # Retrieve a single record, providing a hash key name and the ID to
@@ -69,7 +55,7 @@ module ROM
         retrieve(key, id).one!
       end
 
-      # @see {https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#describe_table-instance_method}
+      # @see https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#describe_table-instance_method
       # @return [Hash] AWS SDK payload of table information
       def info
         dataset.information
