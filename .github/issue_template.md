@@ -10,6 +10,4 @@ Describe what should happen
 Describe what happens instead
 
 ### System configuration
-**Drumbeat version**:
-
 **Ruby version**:
