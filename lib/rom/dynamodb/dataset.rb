@@ -1,7 +1,39 @@
+require "rom/dynamodb/dataset/where_clause"
+
 module ROM
   module DynamoDB
     class Dataset
+      # @!macro rom.dynamodb.dataset.chain_note
+      # @note This method can be chained with other relational methods.
+
+      # @!macro rom.dynamodb.dataset.order_note
+      # @note Items with the same partition key value are stored in sorted
+      #   order by sort key. If the sort key data type is Number, the results
+      #   are stored in numeric order. For type String, the results are stored
+      #   in order of ASCII character code values. For type Binary, DynamoDB
+      #   treats each byte of the binary data as unsigned.
+
+      # @!macro rom.dynamodb.dataset.series_note
+      # @note Whilst the naming and parameters of this method indicate a
+      #   time-series based operation, DynamoDB can perform a range query
+      #   for any orderable data.
+
+      # @attr_reader [String] name the full name of the DynamoDB Table to query.
+
+      # @attr_reader [Symbol] operation the operation to perform on DynamoDB.
+
+      # @attr_reader [Hash] config the configuration to apply to the underlying
+      #   DynamoDB client.
+
       attr_reader :name, :operation, :config
+
+      # @attr [Array<Hash>] queries the array of query sets to merge and use
+      #   to query DynamoDB.
+
+      #   This array of hashes is built up by chaining the
+      #   relational methods together and when the query is finally executed,
+      #   all the hashes in this array are merged and send to the underlying
+      #   DynamoDB client.
 
       attr_accessor :queries
 
@@ -12,44 +44,234 @@ module ROM
         @queries = queries
       end
 
+      # The name of an index to query. This index can be any local secondary
+      # index or global secondary index on the table.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @param name [String] the name of the index to query.
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def index(name)
         restrict(index_name: name)
       end
 
+      # Performs a traversal of the index in ascending order on the range key.
+      # DynamoDB will return the results in the order in which they
+      # have been stored.
+      #
+      # @note This is the default behaviour.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro rom.dynamodb.dataset.order_note
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def ascending
         restrict(scan_index_forward: true)
       end
 
+      # Performs a traversal of the index in descending order on the range key.
+      # DynamoDB reads the results in reverse order by sort key value, and
+      # then returns the results to the client.
+      #
+      # @note This is the default behaviour.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro rom.dynamodb.dataset.order_note
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def descending
         restrict(scan_index_forward: false)
       end
 
+      # Limits the number of results returned by the query or scan operation.
+      #
+      # The maximum number of items to evaluate (not necessarily the number of
+      # matching items). If DynamoDB processes the number of items up to the
+      # limit while processing the results, it stops the operation and returns
+      # the matching values up to that point.
+      #
+      # If there are more matches to be returned, the {#last_evaluated_key}
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def limit(num = nil)
         append { { limit: num } unless num.nil? }
       end
 
+      # The composite key of the first item that the resulting query will
+      # evaluate. Use this method if you have a populated {#last_evaluated_key}.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @note When applying an offset, it must include the same composite key of
+      #   which the index you are querying is composed from. Therefore, if your
+      #   index has both a hash and range key, the key you provide must also have
+      #   these.
+      #
+      # @param key [Hash] the composite offset key matching the queryable index.
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def offset(key)
         append { { exclusive_start_key: key } unless key.nil? }
       end
 
+      # Selects one or more keys to retrieve from the table.
+      #
+      # These keys can include scalars, sets, or elements of a JSON
+      # document.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @param keys [Array<String>] an array of string expressions to apply
+      #   to the query
+      #
+      # @return [self] the {Dataset} object the method was performed on.
       def select(keys)
-        restrict(select: "SPECIFIC_ATTRIBUTES", attributes_to_get: keys.collect(&:to_s))
+        restrict(projection_expression: keys.collect(&:to_s).join(","))
       end
 
-      def equal(key, val, predicate = :eq)
-        restrict_by(key, predicate, [val])
+      # Restricts keys within a composite key, by values using a specific operand.
+      #
+      # You can compose where clauses using compartive operators from inside
+      # a block, allowing a greater level of flexibility.
+      #
+      # Multiple where clauses can be chained, or multiple predicates defined
+      # inside an array within a single clause. See the examples below.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @note The following operands are supported, :>=, :>, :<, :<=, :== and :between
+      #
+      # @example Given Table[id<Hash>,legs<Range>]
+      #   animals = relation.where { id == "mammal" && legs > 0 }
+      #   animals #=> [{id: "mammal", legs: 2, name: "Human"}, ...]
+      #
+      # @example Using a value mapping hash
+      #   keys = { type: "mammal", min_legs: 2 }
+      #   animals = relation.where(keys) { id == type && legs > min_legs }
+      #   animals #=> [{id: "mammal", legs: 2, name: "Elephant"}, ...]
+      #
+      # @example Matching by exact value
+      #
+      # @example Between two values
+      #
+      # @example Matching with begins_with
+      #
+      def where(maps = {}, &block)
+        clause = WhereClause.new(maps).execute(&block)
+        append(:query) do
+          {
+            expression_attribute_values: clause.expression_attribute_values,
+            expression_attribute_names: clause.expression_attribute_names,
+            key_condition_expression: clause.key_condition_expression,
+          }
+        end
       end
 
-      def between(key, after, before, predicate = :between)
-        restrict_by(key, predicate, [after, before])
+      # Retrieves a key present within the composite key for this index by its
+      # exact value.
+      #
+      # @deprecated Use {#where} instead.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @example Given Table[id<Hash>]
+      #   relation.equal(:id, 1).one! #=> { id: 1, ... }
+      #
+      # @example Given Table[id<Hash>,created_at<Range>]
+      #   relation.equal(:id, 1).equal(:created_at, Time.now.to_f).one! #=> { id: 1, ... }
+      #
+      # @param key [Symbol] the key to match the provided value against.
+      # @param val the value to match against the key in the index.
+      # @param predicate [Symbol] the query predicate to apply to DynamoDB.
+      #
+      # @return [self] the {Dataset} object the method was performed on.
+      def equal(key, val, predicate = :"=")
+        append(:query) do
+          {
+            expression_attribute_values: { ":#{key}_e" => val },
+            expression_attribute_names: { "##{key}_e" => key },
+            key_condition_expression: "##{key}_e #{predicate} :#{key}_e"
+          }
+        end
       end
 
-      def after(key, after, predicate = :ge)
-        restrict_by(key, predicate, [after])
+      # Retrieves all matching range keys within the composite key for the
+      # index between two points.
+      #
+      # @deprecated Use {#where} instead.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @!macro rom.dynamodb.dataset.series_note
+      #
+      # @example Given Table[id<Hash>,legs<Range>]
+      #   users = relation.equal(:id, "mammal").between(:legs, 0, 4).to_a
+      #   users #=> [{id: "mammal", legs: 2, name: "Human"}, {id: "mammal", legs: 4, name: "Elephant"}, ...]
+      #
+      # @param key [Symbol] the key to match the provided value against.
+      # @param after the value to match range values after
+      # @param before the value to match range values before
+      #
+      # @return [self] the {Dataset} object the method was performed on.
+      def between(key, after, before)
+        append(:query) do
+          {
+            expression_attribute_values: { ":#{key}_a" => after, ":#{key}_b" => before },
+            expression_attribute_names: { "##{key}_be" => key },
+            key_condition_expression: "##{key}_be BETWEEN :#{key}_a AND #{key}_b"
+          }
+        end
       end
 
-      def before(key, before, predicate = :le)
-        restrict_by(key, predicate, [before])
+      # Retrieves all matching range keys within the composite key after the
+      # value provided.
+      #
+      # @deprecated Use {#where} instead.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @!macro rom.dynamodb.dataset.series_note
+      #
+      # @deprecated Use {#where} instead.
+      #
+      # @example Given Table[id<Hash>,legs<Range>]
+      #   users = relation.equal(:id, "mammal").after(:legs, 0).to_a
+      #   users #=> [{id: "mammal", legs: 2, name: "Human"}, ...]
+      #
+      # @param key [Symbol] the key to match the provided value against.
+      # @param after the value to match range values after
+      # @param predicate [String] the query predicate to apply to DynamoDB.
+      #
+      # @return [self] the {Dataset} object the method was performed on.
+      def after(key, after, predicate = :>=)
+        append(:query) do
+          {
+            expression_attribute_values: { ":#{key}_a" => after },
+            expression_attribute_names: { "##{key}_a" => key },
+            key_condition_expression: "##{key}_a #{predicate} :#{key}_a"
+          }
+        end
+      end
+
+      # Retreives all matching range keys within the composite key before the
+      # value provided.
+      #
+      # @deprecated Use {#where} instead.
+      #
+      # @!macro rom.dynamodb.dataset.chain_note
+      #
+      # @!macro rom.dynamodb.dataset.series_note
+      def before(key, before, predicate = :<=)
+        append(:query) do
+          {
+            expression_attribute_values: { ":#{key}_b" => before },
+            expression_attribute_names: { "##{key}_b" => key },
+            key_condition_expression: "##{key}_b #{predicate} :#{key}_b"
+          }
+        end
       end
 
       def batch_get(query = nil)
@@ -135,6 +357,9 @@ module ROM
 
       def append(operation = :query, &block)
         result = block.call
+        if result[:key_condition_expression]
+
+        end
         if result
           args = { name: name, config: config, operation: operation }
           self.class.new(args.merge(queries: queries + [result].flatten))
@@ -144,17 +369,10 @@ module ROM
       end
 
       def to_update_structure(hash)
-        values = {}
-        maps = {}
-        expr = 'SET ' + hash.map do |key, val|
-          values[":#{key}"] = val
-          maps["##{key}"] = key
-          "##{key}=:#{key}"
-        end.join(', ')
         {
-          expression_attribute_values: values,
-          expression_attribute_names: maps,
-          update_expression: expr
+          expression_attribute_values: Hash[hash.map { |k, v| [":#{k}_u", v] }],
+          expression_attribute_names: Hash[hash.map { |k, v| ["##{k}_u", v] }],
+          update_expression: hash.map { |k, v| "##{k}_u=:#{k}_u" }.join(", "),
         }
       end
     end

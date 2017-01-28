@@ -20,6 +20,8 @@ module ROM
 
       forward :index
 
+      forward :where
+
       forward :before
 
       forward :after
