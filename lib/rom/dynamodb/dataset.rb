@@ -145,27 +145,30 @@ module ROM
       # @note The following operands are supported, :>=, :>, :<, :<=, :== and :between
       #
       # @example Given Table[id<Hash>,legs<Range>]
-      #   animals = relation.where { id == "mammal" && legs > 0 }
+      #   animals = relation.where { [id == "mammal", legs > 0] }
       #   animals #=> [{id: "mammal", legs: 2, name: "Human"}, ...]
       #
       # @example Using a value mapping hash
       #   keys = { type: "mammal", min_legs: 2 }
-      #   animals = relation.where(keys) { id == type && legs > min_legs }
+      #   animals = relation.where(keys) { [id == type, legs > min_legs] }
       #   animals #=> [{id: "mammal", legs: 2, name: "Elephant"}, ...]
       #
       # @example Matching by exact value
+      #   keys = { type: "mammal" }
+      #   animals = relation.where(keys) { id == type }
+      #   animals #=> [{id: "mammal", legs: 2, name: "Elephant"}, ...]
       #
       # @example Between two values
       #
       # @example Matching with begins_with
       #
       def where(maps = {}, &block)
-        clause = WhereClause.new(maps).execute(&block)
+        clauses = WhereClause.new(maps).execute(&block).clauses
         append(:query) do
           {
-            expression_attribute_values: clause.expression_attribute_values,
-            expression_attribute_names: clause.expression_attribute_names,
-            key_condition_expression: clause.key_condition_expression,
+            expression_attribute_values: clauses.expression_attribute_values,
+            expression_attribute_names: clauses.expression_attribute_names,
+            key_condition_expression: clauses.key_condition_expression,
           }
         end
       end
@@ -188,14 +191,8 @@ module ROM
       # @param predicate [Symbol] the query predicate to apply to DynamoDB.
       #
       # @return [self] the {Dataset} object the method was performed on.
-      def equal(key, val, predicate = :"=")
-        append(:query) do
-          {
-            expression_attribute_values: { ":#{key}_e" => val },
-            expression_attribute_names: { "##{key}_e" => key },
-            key_condition_expression: "##{key}_e #{predicate} :#{key}_e"
-          }
-        end
+      def equal(key, val, predicate = :eq)
+        restrict_by(key, predicate, [val])
       end
 
       # Retrieves all matching range keys within the composite key for the
@@ -216,14 +213,8 @@ module ROM
       # @param before the value to match range values before
       #
       # @return [self] the {Dataset} object the method was performed on.
-      def between(key, after, before)
-        append(:query) do
-          {
-            expression_attribute_values: { ":#{key}_a" => after, ":#{key}_b" => before },
-            expression_attribute_names: { "##{key}_be" => key },
-            key_condition_expression: "##{key}_be BETWEEN :#{key}_a AND #{key}_b"
-          }
-        end
+      def between(key, after, before, predicate = :between)
+        restrict_by(key, predicate, [after, before])
       end
 
       # Retrieves all matching range keys within the composite key after the
@@ -246,14 +237,8 @@ module ROM
       # @param predicate [String] the query predicate to apply to DynamoDB.
       #
       # @return [self] the {Dataset} object the method was performed on.
-      def after(key, after, predicate = :>=)
-        append(:query) do
-          {
-            expression_attribute_values: { ":#{key}_a" => after },
-            expression_attribute_names: { "##{key}_a" => key },
-            key_condition_expression: "##{key}_a #{predicate} :#{key}_a"
-          }
-        end
+      def after(key, after, predicate = :ge)
+        restrict_by(key, predicate, [after])
       end
 
       # Retreives all matching range keys within the composite key before the
@@ -264,14 +249,8 @@ module ROM
       # @!macro rom.dynamodb.dataset.chain_note
       #
       # @!macro rom.dynamodb.dataset.series_note
-      def before(key, before, predicate = :<=)
-        append(:query) do
-          {
-            expression_attribute_values: { ":#{key}_b" => before },
-            expression_attribute_names: { "##{key}_b" => key },
-            key_condition_expression: "##{key}_b #{predicate} :#{key}_b"
-          }
-        end
+      def before(key, before, predicate = :le)
+        restrict_by(key, predicate, [before])
       end
 
       def batch_get(query = nil)

@@ -9,6 +9,10 @@ module ROM
             @clauses = clauses.is_a?(Array) ? clauses : [clauses]
           end
 
+          def concat(val)
+            @clauses.concat(val.is_a?(Array) ? val : [val])
+          end
+
           def expression_attribute_values
             clauses.collect(&method(:to_values)).inject(:merge)
           end
@@ -37,9 +41,12 @@ module ROM
           def to_values(clause)
             case clause.operand
             when :between
+              value = clause.val
+              min = value.min.is_a?(Operand) ? value.min.val : value.min
+              max = value.max.is_a?(Operand) ? value.max.val : value.max
               {
-                ":#{clause.key}_a" => clause.val.min,
-                ":#{clause.key}_b" => clause.val.max
+                ":#{clause.key}_a" => min,
+                ":#{clause.key}_b" => max
               }
             else
               { ":#{clause.key}" => clause.val }
@@ -47,38 +54,45 @@ module ROM
           end
 
           def to_names(clause)
-            { "##{c.key}" => c.key }
+            { "##{clause.key}" => clause.key }
           end
         end
 
         class Operand
           attr_reader :key, :operand, :val
 
-          def initialize(key)
+          def initialize(key:, val:)
             @key = key
+            @val = val
           end
 
           %i(<= == >= > < between).each do |com|
             define_method(com) do |val|
               @operand = com
-              @val = val
+              @val = val.is_a?(Operand) ? val.val : val
               self
             end
+          end
+
+          def <=>(op)
+            val <=> op.val
           end
         end
 
         attr_reader :maps, :clauses
 
         def initialize(maps = {})
+          @clauses = Clause.new
           @maps = maps
         end
 
         def execute(&block)
-          Clause.new(instance_exec(&block))
+          @clauses.concat(instance_exec(&block))
+          self
         end
 
         def method_missing(key)
-          maps[key] || Operand.new(key)
+          Operand.new(key: key, val: maps[key])
         end
       end
     end
