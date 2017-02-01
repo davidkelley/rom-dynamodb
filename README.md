@@ -40,6 +40,10 @@ container = ROM.container(:dynamodb, credentials) do |rom|
   rom.relation(:users) do
     # Key Schema: id<Hash>
     dataset TABLE
+
+    def by_id(val)
+      where { id == val }
+    end
   end
 
   rom.commands(:users) do
@@ -79,15 +83,13 @@ user = create.call({ id: 2, name: "James" })
 
 # update an existing user
 update = container.commands[:users][:update]
-update.where(id: user[:id]) { id == id }.call(name: "Mark")
+update.by_id(user[:id]).call(name: "Mark")
 
 relation.where(id: user[:id]) { id == id }.one! # => { id: 2, name: "Mark" }
 
 # delete an existing user
 delete = container.commands[:users][:delete]
-expressions = { id: user[:id] }
-filter = -> { id == id }
-delete.where(expressions, &filter).call
+delete.by_id(user[:id]).call
 ```
 ---
 
@@ -100,15 +102,15 @@ container = ROM.container(:dynamodb, credentials) do |rom|
     dataset "my-logs-table"
 
     def by_host(ip)
-      equal(:host, ip)
+      where { host == ip }
     end
 
     def after_timestamp(time)
-      after(:timestamp, time)
+      where { timestamp > time }
     end
 
     def before_timestamp(time)
-      before(:timestamp, time)
+      where { timestamp < time }
     end
   end
 
@@ -136,19 +138,19 @@ relation = container.relation(:logs)
 
 relation.count == num_of_logs # => true
 
-all = relation.by_host(host).after(0).to_a # => [{host: "192.168.0.1", ... }, ...]
+all = relation.where(ip: host) { host == ip }.after(0).to_a # => [{host: "192.168.0.1", ... }, ...]
 
 all.size # => 20
 
-before = relation.by_host(host).before(Time.now.to_f + 60 * 60).limit(1).to_a
+before = relation.where(ip: host) { [host == ip, timestamp < (Time.now.to_f + 60 * 60)] }.limit(1).to_a
 
 before.size # => 1
 
 before.first == logs.first # => true
 
-offset = { host: host, timestamp: logs[-2][:timestamp] }
+offset = { ip: host, timestamp: logs[-2][:timestamp] }
 
-last = relation.by_host(host).descending.after(0).offset(offset).limit(1).one!
+last = relation.where(ip: host) { ip == host }.descending.after(0).offset(offset).limit(1).one!
 
 last == logs.last # => true
 ```
