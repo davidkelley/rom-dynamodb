@@ -3,17 +3,17 @@ require "rom/dynamodb/dataset/where_clause"
 module ROM
   module DynamoDB
     class Dataset
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       # @note This method can be chained with other relational methods.
 
-      # @!macro rom.dynamodb.dataset.order_note
+      # @!macro order_note
       # @note Items with the same partition key value are stored in sorted
       #   order by sort key. If the sort key data type is Number, the results
       #   are stored in numeric order. For type String, the results are stored
       #   in order of ASCII character code values. For type Binary, DynamoDB
       #   treats each byte of the binary data as unsigned.
 
-      # @!macro rom.dynamodb.dataset.series_note
+      # @!macro series_note
       # @note Whilst the naming and parameters of this method indicate a
       #   time-series based operation, DynamoDB can perform a range query
       #   for any orderable data.
@@ -29,7 +29,7 @@ module ROM
 
       # @attr [Array<Hash>] queries the array of query sets to merge and use
       #   to query DynamoDB.
-
+      #
       #   This array of hashes is built up by chaining the
       #   relational methods together and when the query is finally executed,
       #   all the hashes in this array are merged and send to the underlying
@@ -47,7 +47,7 @@ module ROM
       # The name of an index to query. This index can be any local secondary
       # index or global secondary index on the table.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
       # @param name [String] the name of the index to query.
       #
@@ -62,8 +62,8 @@ module ROM
       #
       # @note This is the default behaviour.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
-      # @!macro rom.dynamodb.dataset.order_note
+      # @!macro chain_note
+      # @!macro order_note
       #
       # @return [self] the {Dataset} object the method was performed on.
       def ascending
@@ -76,8 +76,8 @@ module ROM
       #
       # @note This is the default behaviour.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
-      # @!macro rom.dynamodb.dataset.order_note
+      # @!macro chain_note
+      # @!macro order_note
       #
       # @return [self] the {Dataset} object the method was performed on.
       def descending
@@ -91,9 +91,9 @@ module ROM
       # limit while processing the results, it stops the operation and returns
       # the matching values up to that point.
       #
-      # If there are more matches to be returned, the {#last_evaluated_key}
+      # If there are more matches to be returned, the last_evaluated_key
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
       # @return [self] the {Dataset} object the method was performed on.
       def limit(num = nil)
@@ -101,9 +101,9 @@ module ROM
       end
 
       # The composite key of the first item that the resulting query will
-      # evaluate. Use this method if you have a populated {#last_evaluated_key}.
+      # evaluate. Use this method if you have a populated last_evaluated_key.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
       # @note When applying an offset, it must include the same composite key of
       #   which the index you are querying is composed from. Therefore, if your
@@ -122,7 +122,7 @@ module ROM
       # These keys can include scalars, sets, or elements of a JSON
       # document.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
       # @param keys [Array<String>] an array of string expressions to apply
       #   to the query
@@ -140,11 +140,11 @@ module ROM
       # Multiple where clauses can be chained, or multiple predicates defined
       # inside an array within a single clause. See the examples below.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
       # @note The following operands are supported, :>=, :>, :<, :<=, :== and :between
       #
-      # @example Given Table[id<Hash>,legs<Range>]
+      # @example Using a composite key table
       #   animals = relation.where { [id == "mammal", legs > 0] }
       #   animals #=> [{id: "mammal", legs: 2, name: "Human"}, ...]
       #
@@ -157,11 +157,6 @@ module ROM
       #   keys = { type: "mammal" }
       #   animals = relation.where(keys) { id == type }
       #   animals #=> [{id: "mammal", legs: 2, name: "Elephant"}, ...]
-      #
-      # @example Between two values
-      #
-      # @example Matching with begins_with
-      #
       def where(maps = {}, &block)
         clauses = WhereClause.new(maps).execute(&block).clauses
         append(:query) do
@@ -178,12 +173,12 @@ module ROM
       #
       # @deprecated Use {#where} instead.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
       #
-      # @example Given Table[id<Hash>]
+      # @example Given a hash key table
       #   relation.equal(:id, 1).one! #=> { id: 1, ... }
       #
-      # @example Given Table[id<Hash>,created_at<Range>]
+      # @example Given a composite key table
       #   relation.equal(:id, 1).equal(:created_at, Time.now.to_f).one! #=> { id: 1, ... }
       #
       # @param key [Symbol] the key to match the provided value against.
@@ -200,11 +195,10 @@ module ROM
       #
       # @deprecated Use {#where} instead.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
+      # @!macro chain_note
+      # @!macro series_note
       #
-      # @!macro rom.dynamodb.dataset.series_note
-      #
-      # @example Given Table[id<Hash>,legs<Range>]
+      # @example Given a composite key table
       #   users = relation.equal(:id, "mammal").between(:legs, 0, 4).to_a
       #   users #=> [{id: "mammal", legs: 2, name: "Human"}, {id: "mammal", legs: 4, name: "Elephant"}, ...]
       #
@@ -222,17 +216,16 @@ module ROM
       #
       # @deprecated Use {#where} instead.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
-      #
-      # @!macro rom.dynamodb.dataset.series_note
+      # @!macro chain_note
+      # @!macro series_note
       #
       # @deprecated Use {#where} instead.
       #
-      # @example Given Table[id<Hash>,legs<Range>]
+      # @example Given a composite key table
       #   users = relation.equal(:id, "mammal").after(:legs, 0).to_a
       #   users #=> [{id: "mammal", legs: 2, name: "Human"}, ...]
       #
-      # @param key [Symbol] the key to match the provided value against.
+      # @param key {Symbol} the key to match the provided value against.
       # @param after the value to match range values after
       # @param predicate [String] the query predicate to apply to DynamoDB.
       #
@@ -246,9 +239,8 @@ module ROM
       #
       # @deprecated Use {#where} instead.
       #
-      # @!macro rom.dynamodb.dataset.chain_note
-      #
-      # @!macro rom.dynamodb.dataset.series_note
+      # @!macro chain_note
+      # @!macro series_note
       def before(key, before, predicate = :le)
         restrict_by(key, predicate, [before])
       end

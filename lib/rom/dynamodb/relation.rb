@@ -1,12 +1,29 @@
 module ROM
   module DynamoDB
+    # Extending the relation class allows you to build in custom queries
+    # that are often repeated throughout your code base, or those which need to be
+    # tested in isolation.
+    #
+    # Below is a guided example for creating, updating, deleting and querying
+    # information for a simple `User` table that consists of an `:id` key in the
+    # form of a hash.
+    #
+    # {include:file:examples/simple_table.rb}
+    #
+    # The additional example below covers the same options but using a `Log`
+    # table that contains a composite key, made up of `:host` and `:timestamp`,
+    # which form the hash and range parts of the key, respectively.
+    #
+    # {include:file:examples/composite_table.rb}
     class Relation < ROM::Relation
       adapter :dynamodb
 
-      # @!macro [attach] r.forward
-      # Performs a $1 action on the relation. In most cases, these operations
+      # @!macro [attach] dm.forward
+      # Performs a $0 $1 action on the relation. In most cases, these operations
       # can be chained to build up larger queries to perform.
+      #
       # @note This method forwards the $1 operation to the underlying dataset.
+      # 
       # @see DynamoDB::Dataset#$1
       forward :restrict
 
