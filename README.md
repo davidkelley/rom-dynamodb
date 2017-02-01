@@ -40,10 +40,6 @@ container = ROM.container(:dynamodb, credentials) do |rom|
   rom.relation(:users) do
     # Key Schema: id<Hash>
     dataset TABLE
-
-    def by_id(id)
-      equal(:id, id)
-    end
   end
 
   rom.commands(:users) do
@@ -71,7 +67,7 @@ relation = container.relation(:users)
 
 relation.count # => 1234
 
-relation.by_id(1).one! # => { id: 1, name: "David" }
+relation.where { id == 1 }.one! # => { id: 1, name: "David" }
 
 relation.info # => <Hash> DynamoDB Table Information
 
@@ -83,13 +79,15 @@ user = create.call({ id: 2, name: "James" })
 
 # update an existing user
 update = container.commands[:users][:update]
-update.by_id(user[:id]).call(name: "Mark")
+update.where(id: user[:id]) { id == id }.call(name: "Mark")
 
-relation.by_id(user[:id]).one! # => { id: 2, name: "Mark" }
+relation.where(id: user[:id]) { id == id }.one! # => { id: 2, name: "Mark" }
 
 # delete an existing user
 delete = container.commands[:users][:delete]
-delete.by_id(user[:id]).call
+expressions = { id: user[:id] }
+filter = -> { id == id }
+delete.where(expressions, &filter).call
 ```
 ---
 

@@ -10,7 +10,7 @@ module ROM
 
         def with_tuple(tuple, attributes)
           data = tuple.is_a?(Hash) ? tuple : tuple.to_h
-          relation.update(input[data], attributes.to_h)
+          source.update(input[data], attributes.to_h)
         end
       end
     end

@@ -350,8 +350,8 @@ module ROM
       def to_update_structure(hash)
         {
           expression_attribute_values: Hash[hash.map { |k, v| [":#{k}_u", v] }],
-          expression_attribute_names: Hash[hash.map { |k, v| ["##{k}_u", v] }],
-          update_expression: hash.map { |k, v| "##{k}_u=:#{k}_u" }.join(", "),
+          expression_attribute_names: Hash[hash.map { |k, v| ["##{k}_u", k] }],
+          update_expression: "SET " + hash.map { |k, v| "##{k}_u = :#{k}_u" }.join(", "),
         }
       end
     end

@@ -224,6 +224,10 @@ module ROM
           def by_id(id)
             retrieve(key: { id: id })
           end
+
+          def by(val)
+            where { id == val }
+          end
         end
 
         rom.commands(descriptor) do
@@ -256,8 +260,16 @@ module ROM
 
     specify { expect(container.commands[descriptor]).to_not be_nil }
 
-    specify { expect { relation.by_id(user[:id]).one! }.to_not raise_error }
+    specify { expect { relation.by(user[:id]).one! }.to_not raise_error }
 
-    specify { expect { relation.by_id(user[:id] * 2).one! }.to raise_error(ROM::TupleCountMismatchError) }
+    specify { expect { relation.by(user[:id] * 2).one! }.to raise_error(ROM::TupleCountMismatchError) }
+
+    specify { expect { relation.where(id: user[:id]) { id == id }.one! }.to_not raise_error }
+
+    specify { expect { relation.where(id: user[:id] * 2) { id == id }.one! }.to raise_error(ROM::TupleCountMismatchError) }
+
+    specify(:deprecated) { expect { relation.by_id(user[:id]).one! }.to_not raise_error }
+
+    specify(:deprecated) { expect { relation.by_id(user[:id] * 2).one! }.to raise_error(ROM::TupleCountMismatchError) }
   end
 end
