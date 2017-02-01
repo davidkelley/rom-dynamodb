@@ -15,8 +15,8 @@ module ROM
             retrieve(key: { id: id })
           end
 
-          def where_id(id)
-            where(id) { id == id }
+          def alter_by_id(val)
+            where { id == val }
           end
         end
 
@@ -65,11 +65,11 @@ module ROM
         it { should_not be_nil }
       end
 
-      specify { expect { subject.where(args) { id == id }.call(name: name) }.to_not change { relation.count } }
+      specify { expect { subject.alter_by_id(user[:id]).call(name: name) }.to_not change { relation.count } }
 
-      specify { expect { subject.where(args) { id == id }.call(name: name) }.to change { relation.where(args) { id == id }.one!['name'] }.from(user[:name]).to(name) }
+      specify { expect { subject.alter_by_id(user[:id]).call(name: name) }.to change { relation.where(args) { id == id }.one!['name'] }.from(user[:name]).to(name) }
 
-      specify(:deprecated) { expect { subject.where_id(user[:id]).call(name: name) }.to_not change { relation.count } }
+      specify(:deprecated) { expect { subject.by_id(user[:id]).call(name: name) }.to_not change { relation.count } }
 
       specify(:deprecated) { expect { subject.by_id(user[:id]).call(name: name) }.to change { relation.by_id(user[:id]).one!['name'] }.from(user[:name]).to(name) }
     end
@@ -85,20 +85,20 @@ module ROM
 
       let(:args) { { id: user[:id] } }
 
-      specify { expect { subject.where(args) { id == id }.call }.to change { relation.count }.by(-1) }
+      specify { expect { subject.alter_by_id(user[:id]).call }.to change { relation.count }.by(-1) }
 
       specify(:deprecated) { expect { subject.by_id(user[:id]).call }.to change { relation.count }.by(-1) }
 
       describe 'before delete' do
-        specify { expect { relation.where(args) { id == id }.one! }.to_not raise_error }
+        specify { expect { relation.alter_by_id(user[:id]).one! }.to_not raise_error }
 
         specify(:deprecated) { expect { relation.by_id(user[:id]).one! }.to_not raise_error }
       end
 
       describe 'after delete' do
-        before { subject.where(args) { id == id }.call }
+        before { subject.alter_by_id(user[:id]).call }
 
-        specify { expect { relation.where(args) { id == id }.one! }.to raise_error(ROM::TupleCountMismatchError) }
+        specify { expect { relation.alter_by_id(user[:id]).one! }.to raise_error(ROM::TupleCountMismatchError) }
 
         specify(:deprecated) { expect { relation.by_id(user[:id]).one! }.to raise_error(ROM::TupleCountMismatchError) }
       end
