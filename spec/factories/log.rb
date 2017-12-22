@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :log, class: Hash do
     transient do
       sequence_step 100

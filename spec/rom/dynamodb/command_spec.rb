@@ -38,7 +38,7 @@ module ROM
       end
     }
 
-    let(:relation) { container.relation(descriptor) }
+    let(:relation) { container.relations[descriptor] }
 
     describe 'create' do
       subject(:command) { container.commands[descriptor][:create] }

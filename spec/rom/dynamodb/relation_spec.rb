@@ -50,7 +50,7 @@ module ROM
       end
     }
 
-    subject(:relation) { container.relation(descriptor) }
+    subject(:relation) { container.relations[descriptor] }
 
     before { container.commands[descriptor][:create].call(logs) }
 
@@ -236,7 +236,7 @@ module ROM
       end
     }
 
-    subject(:relation) { container.relation(descriptor) }
+    subject(:relation) { container.relations[descriptor] }
 
     before { container.commands[descriptor][:create].call(users) }
 

@@ -19,8 +19,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "rom", "~> 3.0.0.beta1"
-  spec.add_runtime_dependency "aws-sdk-core", ">= 2.1"
+  spec.add_runtime_dependency "rom", "~> 4.0.0"
+  spec.add_runtime_dependency "aws-sdk-core", "~> 2.10"
   spec.add_runtime_dependency "deep_merge", ">= 1.1.1"
 
   spec.add_development_dependency "json", "~> 2.0"
@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "yard", "~> 0.9"
   spec.add_development_dependency "redcarpet", "~> 3.4"
   spec.add_development_dependency "codeclimate-test-reporter", "~> 1.0"
-  spec.add_development_dependency "factory_girl", "~> 4.5"
+  spec.add_development_dependency "factory_bot", "~> 4.8"
 end

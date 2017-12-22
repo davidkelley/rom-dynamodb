@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user, class: Hash do
     id { SecureRandom.uuid }
 

@@ -290,6 +290,7 @@ module ROM
       def each(&block)
         each_item(build, &block)
       end
+      alias map each
 
       def connection
         @connection ||= Aws::DynamoDB::Client.new(config)

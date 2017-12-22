@@ -2,7 +2,7 @@ require 'rom/dynamodb'
 
 TABLE = "my-dynamodb-users-table"
 
-# any other AWS::DynamoDB::Client options
+# any other Aws::DynamoDB::Client options
 credentials = { region: 'us-east-1' }
 
 container = ROM.container(:dynamodb, credentials) do |rom|
@@ -43,7 +43,7 @@ end
 # create fake logs
 container.commands[:logs][:create].call(logs)
 
-relation = container.relation(:logs)
+relation = container.relations[:logs]
 
 relation.count == num_of_logs # => true
 
