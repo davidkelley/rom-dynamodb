@@ -37,7 +37,7 @@ TABLE = "my-dynamodb-users-table"
 credentials = { region: 'us-east-1' }
 
 container = ROM.container(:dynamodb, credentials) do |rom|
-  rom.relations[:users] do
+  rom.relation(:users) do
     # Key Schema: id<Hash>
     dataset TABLE
 
@@ -97,7 +97,7 @@ delete.by_id(user[:id]).call
 
 ```ruby
 container = ROM.container(:dynamodb, credentials) do |rom|
-  rom.relations[:logs] do
+  rom.relation(:logs) do
     # Key Schema: host<Hash>, timestamp<Range>
     dataset "my-logs-table"
 

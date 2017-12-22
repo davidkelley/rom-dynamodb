@@ -22,7 +22,7 @@ module ROM
 
     let(:container) {
       ROM.container(:dynamodb, credentials) do |rom|
-        rom.relations[descriptor] do
+        rom.relation(descriptor) do
           def by_host(host)
             equal(:host, host)
           end
@@ -220,7 +220,7 @@ module ROM
 
     let(:container) {
       ROM.container(:dynamodb, credentials) do |rom|
-        rom.relations[descriptor] do
+        rom.relation(descriptor) do
           def by_id(id)
             retrieve(key: { id: id })
           end
