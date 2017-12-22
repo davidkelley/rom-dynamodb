@@ -6,7 +6,7 @@ TABLE = "my-dynamodb-users-table"
 credentials = { region: 'us-east-1' }
 
 container = ROM.container(:dynamodb, credentials) do |rom|
-  rom.relation(:users) do
+  rom.relations[:users] do
     # Key Schema: id<Hash>
     dataset TABLE
 

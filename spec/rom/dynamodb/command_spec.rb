@@ -10,7 +10,7 @@ module ROM
 
     let(:container) {
       ROM.container(:dynamodb, credentials) do |rom|
-        rom.relation(descriptor) do
+        rom.relations[descriptor] do
           def by_id(id)
             retrieve(key: { id: id })
           end
