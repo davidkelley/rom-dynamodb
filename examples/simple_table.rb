@@ -36,7 +36,7 @@ container = ROM.container(:dynamodb, credentials) do |rom|
   end
 end
 
-relation = container.relation(:users)
+relation = container.relations[:users]
 
 relation.count # => 1234
 

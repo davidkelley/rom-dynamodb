@@ -43,7 +43,7 @@ end
 # create fake logs
 container.commands[:logs][:create].call(logs)
 
-relation = container.relation(:logs)
+relation = container.relations[:logs]
 
 relation.count == num_of_logs # => true
 
