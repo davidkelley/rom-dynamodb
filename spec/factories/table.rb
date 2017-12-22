@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :table, class: Hash do
     table_name { SecureRandom.uuid }
 
@@ -8,7 +8,7 @@ FactoryGirl.define do
       schema({ id: :HASH })
 
       global([])
-      
+
       local([])
     end
 
